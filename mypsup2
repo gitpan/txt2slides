@@ -1,0 +1,53 @@
+#!/usr/local/bin/perl
+$flag = 0;                      # We have not yet found a page
+$mod = 1;                       # First page mod 2 is 1
+$page = 1;                      # Start at page #1
+$pages = 1;                     # Allow %%Pages comment
+
+
+my $s = 9/14*0.99;                   # scale factor
+my ($W, $H) = (72*8.5, 72*11);  # Page width and height
+my ($Mx, $My) = (54, 72);       # x and y margin widths
+my ($T, $B) = ($H/2-$Mx*$s, $My-$Mx*$s); # y coords of two pages ref points
+my ($R) = $W/2 + $H/2*$s + $My*$s; # x coord of ref points
+
+while (<>) {
+    if (/^%%Pages:/ && $pages) {
+        print "%%Pages: (atend)\n";
+        $pages = 0;
+    } elsif (/^%%Page:/) {      # We have found a page
+        if ($flag) {
+            print "restore\n";  # restore if it isn't the first
+        }
+        $flag = 1;
+        if ($mod == 1) {            # Translate for first of two pages
+          printf("%%%%Page: %d %d\n", $page, $page);
+          print "save /showpage {} def\n";
+          print "$R $B translate\n";
+        } elsif ($mod == 2) {
+          print "save\n";
+          print "$R $T translate\n";
+        } else { die "mod=$mod" }
+        print "90 rotate $s $s scale\n";
+        $mod++;
+        if ($mod == 3) {
+          $page++;
+          $mod = 1;
+        }
+    } elsif (/^%%Trail/) {      # Cleanup if a %%Trailer is found
+        if ($flag) {
+            print "restore\n";
+        }
+        print $_;
+        printf("%%%%Pages: %d\n", $page);
+        $flag = 0;
+    } elsif (/^%%EOF/) {        # Cleanup if an %%EOF is found
+        if ($flag) {
+            print "restore\nshowpage\n";
+        }
+        print $_;
+        $flag = 0;
+    } else {
+        print;
+    }
+}

@@ -1,0 +1,798 @@
+       
+#HTML# <img src="bigmed-sigils.gif" align=right>
+
+Conference Presentation Judo
+****************************
+
+M. J. Dominus
+
+Plover Systems Co.
+
+     mjd-yapc-judo+@plover.com
+
+#RTIMG# eyeball.jpg
+
+June, 2002
+
+* [R[CAUTION]R]: This talk may offer insight into the way I think
+
+* [R[CAUTION]R]: I am cynical and elitist
+
+
+----------------------------------------------------------------
+
+Conference Presentations
+************************
+
+* Most tutorial speakers are pretty awful
+
+* Some of this is just lack of practice
+
+  * Some is stage fright
+
+  * Some is lack of aptitude
+
+* Some of it is easily correctable
+
+* I've picked up a few tricks
+
+* I will tell you all my dirty little secrets
+
+================================================================
+
+  * My professional ones, I mean
+
+----------------------------------------------------------------
+
+Conference Presentations
+************************
+
+* I've been doing presentations at big conferences since 1998
+
+  * 40 hours of tutorials at TPC alone, also Usenix, LISA, YAPC, etc.
+
+* I am consistently the highest-rated speaker at TPC
+
+================================================================
+
+### #RTIMG# conway-tooth.jpg
+
+  * Yup, even higher than Damian
+
+----------------------------------------------------------------
+
+The Biggest Mistake You Can Make
+********************************
+
+* I'm going to start big
+
+* What is the biggest mistake you can make when making a conference presentation?
+
+================================================================
+
+#RTIMG# caught-short.jpg
+
+* Forgetting to go to the bathroom beforehand
+
+----------------------------------------------------------------
+
+The Second Biggest Mistake You Can Make
+***************************************
+
+* Going to the bathroom beforehand
+
+================================================================
+
+#IMG# microphone.gif
+
+* But forgetting to switch off the wireless mike
+
+----------------------------------------------------------------
+The Biggest Mistake You Can Make
+********************************
+
+* OK, seriously
+
+* You didn't need me to tell you that
+
+================================================================
+
+* Or if you did, you were doomed anyway
+
+* So what's the best advice I can give you that might _not_ be obvious?
+
+----------------------------------------------------------------
+The Single Biggest Mistake You Can Make
+***************************************
+
+#RTIMG# cake2.jpg
+
+* Conference tutorials last three and a half hours
+
+* Including a half-hour break in the middle
+
+* During this break, coffee and cake are served
+
+================================================================
+
+* You _must not_ let the class out for break too early or too late
+
+----------------------------------------------------------------
+
+On Content
+**********
+
+* This talk is _Conference Presentation Judo_
+
+  * So I hope you were expecting me to talk about cake, not content
+
+* So let's deal briefly with content
+
+* Just to get it out of the way
+
+----------------------------------------------------------------
+On Content
+**********
+
+* The three most important factors in giving a good presentation are:
+
+================================================================
+
+  1. Delivery
+
+================================================================
+
+  2. Delivery
+
+================================================================
+
+  3. Delivery
+
+----------------------------------------------------------------
+On Content
+**********
+
+#RTIMG# snowstorm.jpg
+
+* Content is quaternary
+
+* People come to conferences on vacation
+
+  * That is why they do not have them in Fargo
+
+  * The class is an _excuse_ for the vacation
+
+* Your primary goal should be to entertain
+
+* Study Damian.  He is the master.
+
+----------------------------------------------------------------
+On Content
+**********
+
+* Of course, more content is always better
+
+================================================================
+
+#HTML# <br clear=right><img align=left src="boss.gif">
+
+  * You must also give them an idea that they learned something
+
+  * They need a plausible story to tell their boss when they get home  
+
+* But if you must choose, choose delivery over content
+
+* With that disclaimer, the second biggest mistake you can make is content-related
+
+----------------------------------------------------------------
+The Big Content Mistake
+***********************
+
+#HTML# <p align=center><font color="green" size="+4">Do <b>not</b>
+begin with a long general introduction.
+#HTML# </font></p>
+
+o You know how this goes
+
+o Suppose the class is "Introduction to XML"
+
+----------------------------------------------------------------
+
+Introduction to XML -> What is XML?
+***********************************
+
+XML is:
+
+* Structured
+* Extensible
+* Markup
+* Language
+* Internationalized
+* Standardized
+* Widely-Deployed
+* Content-directed
+* Application-oriented
+* SGML-compliant
+* Customizable
+* Synergistic
+* Incremental
+* Functional
+* Fruity-good
+
+----------------------------------------------------------------
+
+The Long Introduction
+*********************
+
+* Then they have a couple of slides on "XML's good points"
+
+* Then they have a couple of slides on "XML's limitations"
+
+* "What XML is used for"
+
+  * (Namedropping section)
+
+* "History of XML"   
+
+* "Overview of the standardization process"
+
+* Blah blah blah
+
+* I give you my solemn word of honor that I am not thinking of any specific instructor here
+
+----------------------------------------------------------------
+
+The Long Introduction
+*********************
+
+* This stuff is all a waste of time
+
+* Learning that "XML is content-directed" will not help anyone do anything
+
+* People who don't know yet what XML is will pick it up from the examples
+
+  * If not, your examples are no good
+
+* Get to specific technical information as quickly as possible
+
+----------------------------------------------------------------
+The Long Introduction
+*********************
+
+* A three-hour class is a _terrible_ way to learn anything
+
+* _Nobody_ can remain attentive for that long
+
+  * Typical attention span:  45 minutes
+
+* Therefore, you should front-load the class
+
+* The _most important_ material in the first 45 minutes
+
+* The Long Introduction squanders those precious first minutes
+----------------------------------------------------------------
+
+A Bit of Advice
+***************
+
+o You have probably heard:
+
+#HTML# <p align=center><font color="red" size="+2">
+Tell them what you're going to tell them; then tell them; 
+then tell them what you told them.
+#HTML# </font></p>
+
+================================================================
+
+#RTIMG# bullshit.jpg
+
+o Bullshit
+
+o You only have three hours, bozo
+
+o You can't waste twenty minutes at each end repeating stuff
+
+o Besides, it's _boring_
+
+================================================================
+
+o My replacement for that advice:
+
+#HTML# <p align=center><font color="red" size="+2">
+Get to the point as quickly as possible.
+#HTML# </font></p>
+#HTML# <p align=center><font color="red" size="+2">
+Stay there.
+#HTML# </font></p>
+#HTML# <p align=center><font color="red" size="+2">
+Don't repeat; embellish.
+#HTML# </font></p>
+
+----------------------------------------------------------------
+
+Get to the Point
+****************
+
+o Here's the introduction section of one of my tutorials
+
+#HTML# <hr>
+#HTML# <table width="80%"><tr><td><font size="-1">
+
+What is This Class About?
+*************************
+
+o The _Iterator_ is a fundamental control structure, analogous to the loop
+
+  o What problems does it solve?
+
+  o When should you use it?
+
+  o How do you build one?
+
+o Examples
+
+  o Generating DNA sequences
+
+  o Database searches
+
+  o Permutations
+
+  o Directory tree walker
+
+  o Web spider
+
+#HTML# </font></td></tr></table>
+#HTML# <hr>
+
+o This is all the introduction you should need
+
+o That list of examples was very carefully constructed
+
+----------------------------------------------------------------
+
+Get to the Point
+****************
+
+o The first example is introduced on slide 2
+
+#HTML# <hr>
+#HTML# <table width="80%"><tr><td><font size="-1">
+
+#RTIMG# dna
+
+Genomic Sequence Generator
+**************************
+
+o This is a real-world application
+
+o A biologist wrote to ask me this question:
+
+o Given a pattern like [[AT<GC>A<TA>]] 
+
+  o Produce the strings [[ATGAT]], [[ATGAA]], [[ATCAT]], [[ATCAA]].
+
+#HTML# </font></td></tr></table>
+#HTML# <hr>
+
+o Recursive code to solve this problem appears on slide 3
+
+o Then I discuss the severe problems with that approach
+
+o Shortly thereafter, the solution (iterators) appears
+
+----------------------------------------------------------------
+Illustrations
+*************
+
+#RTIMG# carrots.jpg
+
+* OK, enough about content
+
+* Back to presentation
+
+* Have pictures on the slides
+
+* Even if they are irrelevant
+
+* They help wake people up
+
+  * And give their eyes and brains a rest
+
+----------------------------------------------------------------
+
+Illustrations
+*************
+
+* Of course, relevant is good too
+
+* Metaphoric illustrations are also good
+
+* Bright colors are a good idea
+
+* Diagrams are always helpful
+
+* I like to have pictures that commit atrocious puns
+
+#IMG# autoload.jpg
+
+----------------------------------------------------------------
+Illustrations
+*************
+
+* If you have line drawings, make the lines two pixels thick
+
+#HTML# <table align=center><tr>
+#HTML# <td><img src="thinlines.gif"></td><td width="10%"></td><td><img src="thicklines.gif"></td>
+#HTML# </tr></table>
+
+* One-pixel lines are perfectly legible
+
+* But the thicker lines look better
+
+* It took me five years to figure this out
+----------------------------------------------------------------
+
+#RTIMG# earhart.jpg
+#HTML# <img src="earhart.jpg" align=left>
+
+Illustrations
+*************
+
+* Make sure pictures of people are _facing_ your text
+
+* People will pay more attention if they see someone else paying attention
+
+* Vice versa
+
+----------------------------------------------------------------
+
+Illustrations
+*************
+
+* This is the most cynical, manipulative trick I know:
+
+================================================================
+
+#IMG# happy-baby.JPG
+
+* I have not yet tried using pictures of adorable kittens
+
+----------------------------------------------------------------
+
+Speed
+*****
+
+* Most instructors go too slowly
+
+* A median (50%) rate is fine for undergrad classes
+
+  * Because everyone must pass the exam
+
+#RTIMG# a-ko
+
+* In a three-hour class, your strategy must be different
+
+* The typical student will learn:
+
+  * One or two specific techniques
+
+  * A groundwork of more general understanding
+
+  * This will prepare them for later self-study
+
+* Slower students will get this much whether you go quickly or slowly
+
+* Faster ones will get more if you go faster
+
+* I try to target the 75-80% mark
+
+----------------------------------------------------------------
+
+Speed
+*****
+
+#RTIMG# sleepy.jpg
+
+* At any speed, not everyone will get everything
+
+* Some people will fall off the bus
+
+* Some will doze off
+
+* So have many synchronization points along the way
+
+* When someone gets lost, they can start over fresh at the next synchronization point
+
+* If you use this strategy, even slower people will learn more
+
+----------------------------------------------------------------
+
+### #HTML# <img src="uri.jpg" align="left">
+
+The Guy in the Second Row
+*************************
+
+* There seems to be one of these at every talk
+
+* He's the one who thinks he's there to have a dialogue with you
+
+* He always sits in the second row on the aisle
+
+* I do not know why this is
+
+* I originally planned to have a gallery of Guys in the Second Row I have known
+
+* I decided it would be better to show  a one incorrigible example
+----------------------------------------------------------------
+
+#HTML# <img src="mjd.jpg" align="left">
+
+The Guy in the Second Row
+*************************
+
+* Sad but true
+
+----------------------------------------------------------------
+
+Questions
+*********
+
+* When someone in the audience asks a question, always repeat it
+
+* Because the rest of the audience didn't hear it
+
+* If _you_ couldn't hear it, ask them *politely* to repeat it more loudly
+
+* If you still can't hear it, invite them to ask you after class
+
+* Do _not_ yell at them to speak up
+
+* People are nervous about speaking in big rooms full of people
+
+----------------------------------------------------------------
+
+Accordion Sections
+******************
+
+#RTIMG# accordion.jpg
+
+* You never know just how long the class will take
+
+* If you run out of time at slide 111 of 120, people will complain
+
+* So always end on the last slide
+
+================================================================
+
+  * Even if you have to skip a bunch of slides to get there on time
+
+* Have the class end with an _accordion section_
+
+  * Many independent subtopics that can be discarded if necessary
+
+----------------------------------------------------------------
+
+#RTIMG# present.gif
+
+The Bonus Section
+*****************
+
+o You are sure to discard some slides during the editing process
+
+o If the talk is too long, you will cut some slides out
+
+o If you add a new section one year, you'll take out the old one
+
+o Do not throw these things away
+
+o Put them at the end of the talk after the "thank you" slide
+
+o Call this the 'bonus section'
+
+o You will usually not discuss this material in person
+
+o But it will appear in the back of the book
+
+----------------------------------------------------------------
+
+The Bonus Section
+*****************
+
+o This serves at least three functions
+
+  o If the class runs undertime, you can tour some bonus slides
+
+  o It delivers more value to your customers
+
+  o It will prevent stupid complaints about the book not having anything extra
+
+o Many presenters like to append some random RFC or research paper for this reason
+
+o The bonus section is more valuable
+
+----------------------------------------------------------------
+
+Digressions
+***********
+
+* Digressions are OK, but only if
+
+  * Relevant
+
+  * *or* Short
+
+================================================================
+
+* Second-order digressions must be both relevant *and* short
+
+================================================================
+
+* Third-order digressions: Do not.
+
+----------------------------------------------------------------
+Evaluations
+***********
+
+* Mostly worthless
+
+* Every possible complaint will appear
+
+* If one says the talk was too fast, that doesn't mean it was too fast
+
+* Some other evaluation will say it was too slow
+
+        Covered too much / not enough material
+        Followed book too closely / not closely enough
+        Failed to cover the whole book / not enough extra material in the book
+        Did not answer enough questions / too much time answering questions
+        Class was too easy / too hard
+
+----------------------------------------------------------------
+Evaluations
+***********
+
+* Don't let this get you down
+
+* You cannot win
+
+* So do the talk in a way that preserves your professional dignity and integrity
+
+* If _you_ are happy with the talk, that must be enough
+
+----------------------------------------------------------------
+
+Jokes
+*****
+
+#HTML# <p align=center><font color="red" size="+2">
+Always begin with a joke.
+#HTML# </font></p>
+
+================================================================
+
+#HTML# <img src="bullshit-sm.jpg" align=left>
+
+* Bullshit
+
+* Not everyone has a jocular personality
+
+* If yours isn't, don't force it
+
+* You must invent a stage persona that works well for you
+
+* Play to your strengths, not your weaknesses
+
+----------------------------------------------------------------
+
+#RTIMG# kurt.jpg
+
+Friendly Faces
+**************
+
+* Have a friend come and sit in the front row
+
+* Then if you get nervous, you can look at your friend and see a  friendly face
+
+* I like to try to get Kurt Starsinic
+
+================================================================
+
+* He always laughs at all my jokes
+
+================================================================
+
+  o Really loudly
+
+----------------------------------------------------------------
+
+Friendly Faces
+**************
+
+* If you don't have a friend in the audience, pick a friendly-looking stranger
+
+* Focus on this person 
+
+* Sometimes nobody looks friendly
+
+================================================================
+
+#RTIMG# placido.jpg
+
+* This is why I always bring an octopus
+
+----------------------------------------------------------------
+
+#RTIMG# smallchange.jpg
+
+
+Small Change
+************
+
+o Remove all small change from your pockets beforehand
+
+o Some speakers jingle their change for three hours without realizing it
+
+----------------------------------------------------------------
+
+Insults
+*******
+
+* Don't tell the audience what a bunch of idiots they are
+
+* They hate that.
+
+================================================================
+
+* Instead, tell them what idiots some _other_ audience was
+----------------------------------------------------------------
+
+#RTIMG# comma.gif
+
+Proofreading
+************
+
+o Proofread the slides very carefully
+
+o Attendees are incredibly stingy about typos
+
+o "I paid for every comma, and by God, I'm going to get them all."
+
+o Giving a practice version of the talk is always a good idea
+
+o In particular, the test audience will notice most of the remaining typos
+
+----------------------------------------------------------------
+
+Biggest Mistake I Ever Made
+***************************
+
+* At my first conference, I was doing a six-hour security tutorial
+
+* I thought:
+
+#HTML# <p align=center><font color="red" size="+2">
+Security is very serious.  People will want to know I am serious.
+#HTML# </font></p>
+
+================================================================
+
+#HTML# <p align=center><font color="red" size="+2">
+A suit will reassure the corporate types.
+#HTML# </font></p>
+
+#IMG# security-mjd.jpg
+
+* I was thoroughly vilified for this
+
+----------------------------------------------------------------
+#RTIMG# sen.jpg
+
+Thank You
+*********
+
+o I hope you were amused
+
+o But I meant every word
+
+
+----------------------------------------------------------------

@@ -1,0 +1,257 @@
+#!/usr/bin/perl
+
+use utf8;
+
+$BASE = 'slide';
+$NUMBER = 1;
+$SUBSLIDE = 'a';
+$TXTSUFFIX = '.txt';
+$SLDSUFFIX = '.html';
+
+
+# $do_not_unlink = 1;
+
+$PREAMBLE  = './PREAMBLE';
+$INAMBLE   = './INAMBLE';
+$POSTAMBLE = './POSTAMBLE';
+
+# $TXT2HTML = "./txt2slide.pl --titlefirst -ah $PREAMBLE -pp $INAMBLE -ab $POSTAMBLE  ";
+$TXT2HTML = "txt2slide --titlefirst -pe 1 -pb 1 -ah $PREAMBLE -pp $INAMBLE -ab $POSTAMBLE"
+#  . q{ --tag 'TT:\\[\\[(.*)\\]\\]'}
+  ;
+
+$SLIDES_PER_PAGE = 1;
+
+use Getopt::Std;
+getopts('4MrF:e:') or die "Usage: $0 [-Mr] [-F for-whom] [-e encoding] File.slides\n";
+$MACROS = $opt_M;
+$RANDOM_PICS = $opt_t;
+$FOR_WHOM = $opt_F;
+$ENCODING = $opt_e;
+$paper_type = $opt_4 ? 'A4' : 'letter';
+%paper_width = ('A4' => 66, 'letter' => 70);
+$paper_width = $paper_width{$paper_type};
+
+mkdir '.bak/', 0777;  # void context
+
+if (@ARGV) {
+  %DO_THIS = map {($_+0) => 1} @ARGV;
+} else {
+  $DO_ALL = 1;
+  $do_toc = 1;
+}
+
+open WIDTH, "> .width-errors";
+open SLIDE_NAMES, "> .slide_names";
+
+binmode STDIN, ":encoding($ENCODING)" if $ENCODING;
+if (-t STDIN) {
+  my @files = <*.slides>;
+  if (@files == 1) {
+    open STDIN, "< @files" 
+      or die "Couldn't open slide file @files for reading: $!; aborting";
+  } else {
+    die "Input source ambiguous; please use $0 < filename\n";
+  }
+}
+
+my $title;
+my %title;
+my $accumulated;
+while (<STDIN>) {
+  s{%(\w+)%}{exists $macro{$1} ? $macro{$1} : $1}ge if $MACROS;
+  if (/^(\t|\s{6})/) {
+    my $length = length;
+    $length -= 1;               # Newline doesn't count
+    $length += 7 while /\t/g;
+    $length -= 2 while /\[\[|\]\]/g;
+    $length -= 3 while /\[[RGBPV]\[|\][RGBPV]\]/g;
+    if ($length > $paper_width) {
+      print WIDTH  "Line $. on slide #$NUMBER " ;
+      print WIDTH "($title) " if defined $title;
+      print WIDTH "may be too long for $paper_type paper.\n";
+    }
+  }
+	  
+  if ($MACROS && s/^\#MACRO\#\s+//) {
+    chomp;
+    my ($name, $value) = split /\s+/, $_, 2;
+#    print STDERR "Defining macro named `$name' = \n\t`$value'\n";
+    $macro{$name} = $value;
+    next;
+  }
+  next if /^\#{3}/;
+  last if /^-{50,}END/;
+  if (/^-{12}/ || /^={32}/) {
+    my $APPEND = /^=/;          # append next slide to this one
+    $get_title = ! $APPEND;     # use previous title if APPEND
+    my ($FOR) = ($_ =~ /(\w+)$/);
+    if ($skip_this) {
+      $skip_this = 0;
+      print STDERR '.';
+    } elsif (++$slides_accumulated == $SLIDES_PER_PAGE) {
+      if ($DO_ALL || $DO_THIS{$NUMBER+0}) {
+        my $letter = $APPEND ? $SUBSLIDE : "";
+        $prevfilename = $filename;
+	$filename = sprintf("$BASE%03d%s$TXTSUFFIX", $NUMBER, $letter);
+        $next_slide{$prevfilename} = $filename;
+	unless (open F, "> $filename") {
+	  warn "Couldn't open `$filename' for writing: $!; skipping this slide.\n";
+	  next;
+	}
+
+	local $^W; # no warnings 'utf8';
+	print F $accumulated;
+        print F qq{#HTML# <small>continued...</small>\n} if $APPEND;
+	close F;
+        print SLIDE_NAMES "$filename\n";
+        if (! -e ".bak/$filename" || system("cmp -s $filename .bak/$filename")) { 
+          print STDERR "*";
+          push @SLIDES, $filename;
+        }
+	print STDERR $NUMBER, $letter, $APPEND ? "-" : " ";
+        if (defined $newsection && !$APPEND) {
+          print STDERR "## ";
+          $newsection{$filename} = $newsection;
+          undef $newsection;
+        }
+      }
+      if ($APPEND) {
+        $SUBSLIDE++;
+      } else {
+	$title{$filename} = $title;
+	undef $title;
+        $TRUE_SLIDES++ unless $APPEND;
+        $accumulated = '' unless $APPEND;
+        $NUMBER++;
+        $SUBSLIDE = 'a';
+      }
+      $slides_accumulated = 0;
+    } else {
+      # ...
+    }
+    if (defined $FOR && !(defined $FOR_WHOM && $FOR eq $FOR_WHOM)) {
+      $skip_this = 1;
+    }
+    next;
+  } elsif (s/^\#TITLE\#\s+//) {
+    $title = $_;
+    $title =~ s/\s+$//;
+    $_ = '';
+  } elsif (/^\#SECTION\#\s*(.*)/) {
+    $newsection = $1;
+    $_ = '';
+  } elsif (! $title && /\w/ && ! /^#/) {
+    $title = $_;
+    $title =~ s/\s+$//;
+  }
+
+  $accumulated .= $_ unless $skip_this;
+}
+
+
+
+print STDERR "\n";
+
+if ($do_toc && open TOC, ">TABLE_OF_CONTENTS.html") {
+  binmode TOC, ':encoding(utf8)' if $ENCODING;
+  print STDERR "Building table of contents\n";
+
+  local $^W; # no warnings 'utf8';
+  copy_file_to_handle(\*TOC, 'TOC_HEAD');
+
+  my $prev_title = '';
+  foreach $file (sort keys %title) {
+    my $f = $file;
+    my ($n) = ($f =~ /(\d+)\.txt$/);
+    $n += 0;
+    $f =~ s/\.txt$/.html/;
+    my $t = $title{$file};
+    $t =~ s,\[\[(.*?)\]\],<tt>$1</tt>,g;
+    next if $t eq  $prev_title; 
+    my $newsec = $newsection{$file};
+    $t = $newsec if $newsec =~ /\S/;
+    my $fs = (defined $newsec || $prev_title eq "") ? "+1" : "+0";    
+    print TOC qq{<hr>\n} if defined $newsec && $prev_title ne "";
+    my $u = $t;
+    $u =~ s{ // }{<BR>};
+    print TOC qq{$n. <a href="$f"><font size="$fs">$u</font></a></li><br>\n}
+      unless $t eq $prev_title;
+    $prev_title = $t;
+  }
+
+  copy_file_to_handle(\*TOC, 'TOC_TAIL');
+  close TOC;
+}
+
+print "$TRUE_SLIDES complete slides.\n";
+
+my $prevhtml = '';
+my ($firsthtml, $lasthtml) = @SLIDES[0, -1];
+for ($firsthtml, $lasthtml) {  s/\Q$TXTSUFFIX\E$/$SLDSUFFIX/o }
+
+my $enc = $ENCODING ? "--servar ENCODING $ENCODING" : '';
+foreach $slide (@SLIDES) {
+  my $html = $slide;
+  my $nexthtml = $next_slide{$slide};
+  for ($html, $nexthtml) {  s/\Q$TXTSUFFIX\E$/$SLDSUFFIX/o }
+  my ($slideno) = ($slide =~ /slide(\d+)/);
+  $slideno += 0;
+  my $title = $title{$slide};
+  $title =~ s/'/'"'"'/g;        # Bourne was an IDIOT
+  my $cmd = qq{$TXT2HTML $enc --setvar MJD_FIRST_FILE=$firsthtml --setvar MJD_LAST_FILE=$lasthtml --setvar MJD_NEXT_FILE=$nexthtml --setvar MJD_PREV_FILE=$prevhtml --setvar MJD_SLIDE_NUMBER=$slideno --title '$title' $slide > $html};
+#  print STDERR "Command: $cmd\n";
+  system $cmd;
+  if ($?) {
+    warn "Couldn't run $cmd ($?)...\n";
+    unlink $html;
+    warn("Exiting.\n"), exit $? if $? && 127;
+  }
+  rename $slide, ".bak/$slide";
+#  unlink $slide unless $do_not_unlink;
+  print STDERR "$slide -> $html\n";
+  $prevhtml = $html;
+}
+
+# print STDERR "Final NUMBER: $NUMBER\n";
+{ 
+  # BUG: Doesn't remove leftover slide300a.html for example.
+  my $extraslide = slidefile($NUMBER);
+  last unless -e $extraslide;
+  unlink $extraslide;
+  $extraslide = textfile($NUMBER);
+  unlink ".bak/$extraslide"; 
+  $NUMBER++;
+  redo;
+}
+
+system("rm -f *.txt");
+
+sub slidefile {
+  sprintf "slide%03d.html", shift();
+}
+
+sub textfile {
+  sprintf "slide%03d.txt", shift();
+}
+
+sub copy_file_to_handle {
+  my ($fh, $file) = @_;
+  local *IN;
+  open IN, "< ./$file";
+  binmode IN, ":encoding($ENCODING)" if $ENCODING;
+  print $fh $_ while <IN>;
+  close IN;
+}
+
+__END__
+
+Line beginning with ------------: End of slide; emit current slide and
+start next slide.
+
+Everything including #%# and thereafter on a line is ignored.
+
+Paragraph beginning with \s*#:  Numbered list item.
+Paragraph beginning with \s*\*:  Bulleted list item.
+
+First line on each slide is a title.

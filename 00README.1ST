@@ -1,0 +1,45 @@
+
+There are only three things I want to tell you about this package.
+
+1.  If you run 'make' in this directory, it should manufacture the
+    slides for the sample talk, which is also at
+
+        http://perl.plover.com/yak/typing/
+
+    The main source file for the slides is Typing.slides
+    This source file demonstrates all the important features of the package.
+
+2.  The important part of the program is a hacked up version of
+    'txt2html', by Seth Golub.    Thank you, Seth!
+
+        http://www.aigeek.com/txt2html/
+
+3.  For years I kept this package secret because I didn't want to
+    support it.  If it works for you, wonderful.  If not, I don't want
+    to hear about it.  I run a mailing list where you may be able to
+    get help or updates from other users of this package, or maybe
+    not.  Send a note to mjd-txt2slides-subscribe@plover.com to subscribe.
+
+----------------------------------------------------------------
+
+FREQUENTLY ASKED QUESTIONS SECTION
+
+Q: How do I ...
+
+A: See section 3, above.
+
+Q: Why didn't it ...
+
+A: See section 3, above.
+
+Q: Where do I send bug reports?
+
+A: See section 3, above.
+
+Q: Your package sucks.
+
+A: That's not a question.
+
+Q: How come your package sucks so hard?
+
+A: See section 3, above.

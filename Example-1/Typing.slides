@@ -1,0 +1,982 @@
+
+
+Strong Typing
+*************
+
+#HTML# <img src="bigmed-sigils.gif" align=right>
+
+M-J. Dominus
+++++++++++++
+
+Plover Systems Co.
+++++++++++++++++++
+
+     mjd@plover.com
+
+Septmber 22, 1999
++++++++++++++++++
+
+
+--------------------------------
+
+On Holy Wars
+************
+
+
+Can be hard to believe they ever get resolved.
+
+Examples:
+
+o Structured programming vs. [[goto]]
+
+o Subroutines vs. no subroutines
+
+o High-level languages vs. Assembly language
+
+o Formal verification and proof techniques useful?
+
+o Strong typing
+
+
+----------------------------------------------------------------
+
+Why Types?
+**********
+
+Imagine an assembly language program
+
+#HTML# <img src="eels2.jpg" align=right>
+
+Stores a string [[More yummy eels, please]]  into memory at locations 2001-2024
+
+Later on, a mistake occurs
+
+Locations 2012-2015 are loaded into a floating-point register and used as a floating-point number
+
+What do you get when you interpret [[eels]] as a floating point number?
+
+	1.87292264408661e+31
+
+
+[R[Whoops]R]
+
+----------------------------------------------------------------
+
+Why Types?
+**********
+
+	eels  <=>  1.87292264408661e+31  <=>  1,936,483,685
+
+We'd like to prevent this error from occurring.
+
+Idea: 
+
+o Variables have _types_   (integer, character, float, etc.)
+
+o Operations have _types_ 
+
+o Compiler / assembler can check that types match
+
+o Probably first appeared in COBOL
+
+----------------------------------------------------------------
+
+Early Type Systems: FORTRAN
+***************************
+
+(This is Fortran 77, but early Fortran was similar.)
+
+o [[INTEGER]]
+  o [[INTEGER*2]], [[INTEGER*4]], [[INTEGER*8]]
+
+o [[LOGICAL]] (Fortran jargon for `boolean')
+  o [[LOGICAL*1]] (synonym: [[BYTE]]), [[LOGICAL*2]], [[LOGICAL*4]], [[LOGICAL*8]]
+
+o [[REAL]]
+  o [[REAL*4]], [[REAL*8]] (synonym: [[DOUBLE PRECISION]]), [[REAL*16]]
+
+o [[COMPLEX]]
+  o [[COMPLEX*8]], [[COMPLEX*16]] (synonym: [[DOUBLE COMPLEX]]), [[COMPLEX*32]]
+
+
+Now if you write
+
+	INTEGER I
+	REAL R,S
+
+	R = I + S
+
+the compiler can automatically generate the correct instructions
+
+o *Static* type checking
+
+----------------------------------------------------------------
+ 
+FORTRAN Continues
+*****************
+
+o Side note: Declaration is optional, defaults to:
+  o [[INTEGER]] for variables that begin with [[I]], [[J]], [[K]], [[L]], [[M]], [[N]]
+  o [[REAL]] for other variables
+
+o Array types also:
+
+	INTEGER A(10)
+	
+o Functions have types:
+
+	FUNCTION F(X)
+	INTEGER F, X
+	F = X+1
+	RETURN
+
+	N = F(37)
+
+o *Static* type checking
+
+o Also called *strong* type checking
+
+----------------------------------------------------------------
+
+Early Type Systems: Lisp
+************************
+
+o *Dynamic* type checking
+  
+o Values tagged with types
+
+o Operations generate type errors at run time
+
+	(+ 1 2)
+		3
+
+	(+ 1 2.0)
+		3.0
+
+	(+ 1 "eels")
+		Error in +: "eels" is not a number.
+
+----------------------------------------------------------------
+
+Strong Typing in ALGOL-based languages
+**************************************
+
+o ALGOL, C, Pascal
+
+o Attempt to extend type system beyond scalars
+
+o [[array of]] _type_
+
+o [[pointer to]] _type_  (`reference' in ALGOL)
+
+o [[set of]] _type_  (Pascal only)
+
+o [[record of]] _types_ ([[struct]] in C)
+
+o [[function returning]] _type_
+
+o Compositions
+
+	int *((*pf[17])(int));  
+
+
+----------------------------------------------------------------
+
+Strong Typing: Hard to Get Right
+********************************
+
+o Goal: Compile-time checking of program soundness
+
+o Pitfalls
+
+  o Ignore real errors
+  o Report spurious errors
+
+Pascal Examples
+
+     var     s : array [1..10] of character;
+     s := 'hello';			{ You wish }
+
+     {----More, please!---------------------------------------------------}
+	
+     type string = array [1..40] of character;
+     procedure error (c: string)
+     begin
+	write('ERROR: ');
+        write(c);
+	writeln('');
+     end;   
+
+     error('File not found');  { In your dreams }
+     error('File not found                        ');  { You have to do this }
+     error('Please just kill me Mr. Wirth         ');
+
+Actually Wirth agrees with this assessment
+
+I expect that he fixed it in Modula-2 and in Oberon (Does anyone know?)
+
+### Add `index' example here?
+### index('The quick brown fox', 'q')  { In your dreams }
+
+
+----------------------------------------------------------------
+
+Strong Typing: Hard to Get Right
+********************************
+
+C Example
+=========
+
+	int main(void) 
+	{
+	  unsigned char *c;
+	  float f = 10;
+
+	  for (c = (char *)&f; c < sizeof(float) + (char *)&f; c++) {
+	    printf("%u ",  *c);
+	  }
+	  putchar('\n');
+
+	  return 0;
+	}
+
+	float.c: In function `main':
+	float.c:10: warning: comparison of distinct pointer types 
+	            lacks a cast
+
+
+o Warning is spurious
+
+o Worse version of the same problem on the same line is ignored
+
+o Whole program is one giant type violation, but compiler doesn't care
+
+----------------------------------------------------------------
+
+Strong Typing in Pascal and C is a Failure
+******************************************
+
+Many spurious errors
+
+Programmers ignore error messages that appear
+
+Proliferation of type-defeating features
+
+* Casts (C)	[[ (char *)(&f) ]]
+* Automatic conversions  (C)
+
+	int i;
+	i = 1.42857;          /* Silently truncated to 1 */
+
+
+* Variadic functions (C)
+* Union types (C and Pascal both)
+
+	var u: case tag: integer of
+	         0: (intval: integer);
+	         1: (realval: real);
+	         2: (stringval: array [1..20] of character);
+	         3: (boolval: boolean);
+	       end;
+            r : real;
+            
+
+	u.intval = 1428457;
+	r = u.realval;		{ Gack }
+
+* Abuse of the separate compilation facility (Pascal)
+
+This proliferation is a sure sign of failure
+
+----------------------------------------------------------------
+
+Coping With Failure
+*******************
+
+o Strong typing, as implemented in C and Pascal, is not very successful
+
+o Solution 1: Give up
+
+  o Lisp
+  o APL
+  o AWK
+  o Perl   ( _really_ give up: [[+(8/2).".".0.0.0]])
+
+Hey, that worked pretty well!
+
+o Solution 2: Try to do better
+
+  o ML
+  o Haskell
+
+This has _also_ worked pretty well.
+
+----------------------------------------------------------------
+
+Strong Typing that Works
+************************
+
+We saw that typing in Pascal and C failed for several reasons:
+
+* Too fine-grained ([[character[12]??!]] vs. [[character[13]??!]])
+
+* Spurious warnings => ignored warnings
+
+* Too easy to violate (unions, casts)
+
+* Too coarse-grained ([[structs]])
+
+* Inconvenient to use (explicit types everywhere)
+
+These problems are surmountable!
+
+----------------------------------------------------------------
+
+The ML Programming Language
+***************************
+
+* Strongly typed
+
+* Research language
+
+* Originally developed for theorem proving systems
+
+* Solves the type problems of C and Pascal
+
+----------------------------------------------------------------
+
+Types in ML
+***********
+
+o Scalars
+
+	17				int
+	17.3				real
+	"brain d foy"			string
+	true				bool
+
+o Tuples  (special case of records)
+
+	(17, "foo")			int * string
+	(12.5, 13.5, 9)			real * real * int
+	(true, false, true)		bool * bool * bool
+
+o Lists
+
+	[true, false, true]		bool list
+	[true, false, true, false]	bool list
+	[1,2,3,4,5]			int list
+	["brain", "d", "foy"]		string list
+	[17, "foo"]			ILLEGAL
+	[ [1,2,3], [4,6], [0,233] ]	int list list
+
+o _Polymorphism_
+
+	[]				'a list   
+	[ [1,2,3], [], [] ]		int list list
+	[ ["b", "d", "f"], [], [] ]	string list list
+
+o Type composition:
+
+	[ (true, [...]), 
+          (false, [...]),
+          (false, [...]) 
+        ]                               (bool * 'a list) list
+
+
+----------------------------------------------------------------
+
+Types in ML
+***********
+
+o _No_ implicit conversions:
+
+		3 + 4.5			(* Compile-time type error *)
+
+		real(3) + 4.5		(* OK; result is 7.5 : real *)
+
+
+o Function types
+
+	real				int -> real
+	floor				real -> int
+	sqrt				real -> real
+	not				bool -> bool
+	explode				string -> string list
+	mod				int * int -> int
+	rev				'a list -> 'a list
+	
+	::				'a * 'a list -> 'a list
+
+[[h::t]] is a list with head [[h]] and tail [[t]].
+
+	1::2::3::[]
+	[1,2,3]
+
+----------------------------------------------------------------
+
+Big Deal?
+*********
+
+The big deal is that you do _not_ need to declare types!
+
+	fun fact 0 = 1
+	  | fact n = n * fact(n-1);
+
+Compiler says to itself:
+
+o [[0]] is an [[int]], so [[n]] must be also.
+o [[n-1]] checks out OK
+o [[*]] requires two arguments of the same type, so [[fact]] must return an [[int]]
+o The return value of [[1]] is consistent with that
+o OK, everything checks out!
+
+Then it prints:
+
+	val fact = fn : int -> int
+
+Then you look at the type.  Is [[int -> int]] what you expected?
+
+Yes? OK then!
+
+If not, your program almost certainly has a bug.
+
+----------------------------------------------------------------
+
+Type Elaboration Example 2
+**************************
+
+	fun sumof []     = 0
+	  | sumof (h::t) = h + sumof t;
+
+Compiler says to itself:
+
+o Argument is [[ [] ]], so must be some kind of list, say [['a list]]
+o [[h::t]] is also a list, and so [[h]] must have type [['a]] and [[t]] must have type [['a list]]
+o The return value is [[0]], that's an [[int]].
+o  We're adding [[h]] to the return value of [[sumof]], which is an [[int]]
+o [[h]] must also be an [[int]] -- now we know what [['a]] is.
+o [[t]] and [[h::t]] must be [[int list]]
+o Everything else checks out OK
+
+Then it prints:
+
+	val sumof = fn : int list -> int
+
+If we had written [[0.0]] instead of [[0]], the compiler would have
+deduced [[real list -> real]].  
+
+If we had written [[true]] instead of [[0]], the compiler would have
+reported a type error.
+
+----------------------------------------------------------------
+
+Type Elaboration Example 3: Union Types
+***************************************
+
+o Union types were big trouble in Pascal and C.  What does ML do?
+
+	datatype MyNum = IV of int | FV of real;
+
+	val n = FV(1.5);
+		val n = FV 1.5 : MyNum
+
+This is really useful as a union type:
+
+	fun Num_to_real (IV i) = real i
+          | Num_to_real (FV f) = f ;
+
+		val Num_to_real = fn : MyNum -> real
+
+	fun Numsqrt n = FV(sqrt(Num_to_real n));
+
+		val Numsqrt = fn : MyNum -> MyNum
+
+	fun Numtrunc (IV i) = i
+          | Numtrunc (FV f) = trunc f ;
+
+		val Numtrunc = fn : MyNum -> int
+
+----------------------------------------------------------------
+
+Union Type Sabotage
+*******************
+
+Let's try to store a real into a MyNum and read it back as an int:
+
+	fun intval (IV x) = x;
+
+		Warning: match nonexhaustive
+	          IV x => ...
+		val intval = fn : MyNum -> int
+
+	intval (FV 3.5);
+
+		uncaught exception Match...
+
+You can make a union type, but you _can't_ store one type and get it back as another type
+	
+[[intval]] extracts the integer member from a [[MyNum]], but only in a type-safe way
+
+We caused a run-time type error, but we got advance warning at compile time
+
+It can do this for lists too:
+
+	fun Nth (0, (h::t)) = h
+	  | Nth (n, (h::t)) = Nth ((n-1), t) ;
+
+		Warning: match nonexhaustive ...
+  
+		val Nth = fn : int * 'a list -> 'a
+
+----------------------------------------------------------------
+
+Union Type Sabotage
+******************
+
+	datatype MyNum = IV of int | FV of real;
+
+	val n = IV(3);
+
+		val n = IV 3 : MyNum
+
+Let's try again to screw up the union types:
+
+	fun intval (IV i) = i
+	  | intval (FV f) = f ;
+
+		Error: rules don't agree (tycon mismatch)
+		  expected: MyNum -> int
+		  found:    MyNum -> real
+		  rule:
+		    FV x => x
+
+One last try:
+
+	sqrt(n);	
+
+		Error: operator and operand don't agree (tycon mismatch)
+		  operator domain: real
+		  operand:         MyNum
+		  in expression:
+		    sqrt (n)
+
+----------------------------------------------------------------
+
+
+Final Note About Union Types
+****************************
+
+	datatype 'a Tree = Nil
+	                 | Node of ('a * ('a Tree) * ('a Tree));
+
+	fun num_nodes Nil = 0
+	  | num_nodes (Node(_, left, right)) = 
+		1 + num_nodes(left) + num_nodes(right);
+
+		val num_nodes = fn : 'a Tree -> int
+
+	fun node_sum Nil = 0
+	  | node_sum (Node(n, left, right)) =
+		n + node_sum(left) + node_sum(right);
+
+		val node_sum = fn : int tree -> int
+
+Type checker can detect omissions in complicated case analyses
+
+----------------------------------------------------------------
+
+Type Elaboration Example 4
+**************************
+
+	fun map(f, [])     = []
+	  | map(f,(h::t))  = f(h)::(map(f, t));
+
+Compiler says to itself:
+
+o Arguments are [[f]] (which has some unknown type) and [[ [] ]] (which has type [['a list]])
+o [[h]] must have type [['a]] and [[t]] must have type [['a list]].
+o On the right, [[f]] is used as a function applied to [[h]], so [[f]] must have type [['a -> 'b]] for some [['b]]
+o The return value from [[f]] is used in the [[::]] operation with the return from [[map]], so [[map]] must return a [['b list]].
+o Everything else checks out OK
+
+Compiler says:
+
+	val map = fn : ('a -> 'b) * 'a list -> 'b list
+
+----------------------------------------------------------------
+Type Elaboration Example 4 Continued
+************************************
+
+		val map = fn : ('a -> 'b) * 'a list -> 'b list
+
+Actually, ML, supports _Currying_ which means that you can define [[map]] like this:
+
+	fun map f  []     = []
+	  | map f (h::t)  = (f h)::(map f t);
+
+		val map = fn : ('a -> 'b) -> ('a list -> 'b list)
+
+	val sqrtall = map sqrt;
+
+		val sqrtall = fn : real list -> real list
+
+	val sqrts = map sqrt [1.0, 2.0, 3.0, 4.0, 5.0];
+
+		val sqrts = [1.0, 1.414, 1.732, 2.0, 2.236] : real list
+
+----------------------------------------------------------------
+
+Type Elaboration Example 5
+**************************
+
+Sorry, I must do one more!  The ML Type Aliens have control of my brain!
+
+	fun foo []                = []
+          | foo ((true,  ls)::t)  = (rev ls)::(foo t)
+	  | foo ((false, ls)::t)  =      ls ::(foo t) ;
+
+	val foo = fn : (bool * 'a list) list -> 'a list list
+
+Example:
+
+	foo [(true,  [1,2,3]),
+             (false, [4,5,6]),
+	     (true,  [7,8,9])] ;
+
+		val it = [[3,2,1], [4,5,6], [9,8,7]] : int list list;
+
+
+Equivalent formulation:
+
+	fun foo []             = []
+          | foo ((b,  ls)::t)  = (if b then (rev ls) else ls)::(foo t) ;
+
+Side note: 
+
+o If [[rev]] were an argument, it would have to have type [['z -> 'z]].
+
+o In fact, it has type [['z list -> 'z list]], which is suitable.
+
+o The compiler checks to make sure.
+
+----------------------------------------------------------------
+
+Life with ML
+************
+
+ML has a lot of unspectacular successes.
+
+For example, writing the [[first]] function we saw a little while back, I left out some parentheses, and the typechecker caught it.
+
+Programming in ML is pleasant
+
+o No type declarations---everything is automatic
+
+o You get quite a few type errors (darn!)
+
+o But _every error_ indicates a real, _serious_ problem
+
+o Not like [[lint]] or C or Pascal.
+
+----------------------------------------------------------------
+
+A Spectacular Example
+*********************
+
+Here's a *spectacular* example, due to Andrew R. Koenig.
+
+We will write a merge sort function.
+
+Strategy: 
+
+o Split list into two lists
+
+o Sort each list separately
+
+o Merge sorted lists together
+
+We expect the type of this function to be
+
+	int list -> int list
+
+----------------------------------------------------------------
+
+Splitting
+*********
+
+	fun split []        = ([], [])
+	  | split [h]       = ([h], [])
+	  | split (x::y::t) = let val (s1, s2) = split t
+	                       in (x::s1, y::s2)
+	                      end
+	
+	val split = fn : 'a list -> 'a list * 'a list
+
+Merging
+*******
+
+	fun merge ([], x) = x:int list
+	  | merge (x, []) = x
+	  | merge (h1::t1, h2::t2) = 
+	    if h1 < h2    then h1::merge(    t1, h2::t2)
+	                  else h2::merge(h1::t1,     t2);
+	
+	val merge = fn : int list * int list -> int list
+
+(Also the type checker caught a missing comma error while I was
+writing the notes.)
+
+----------------------------------------------
+
+Merge Sort
+**********
+
+	fun sort [] = []
+	  | sort x  = let val (p, q) = split x
+	               in merge (sort p, sort q)
+	              end;
+
+	val sort = fn : 'a list -> int list
+
+Huh???
+
+This says that we could put in _any_ sort of list
+
+(which was not what we expected)
+
+and that even if we put in a list of strings, we will still get a list of ints out.
+
+(which is impossible)
+
+----------------------------------------------
+
+Huh???
+******
+
+	val sort = fn : 'a list -> int list
+
+How is this possible?
+
+One way the impossible can occur is if it never can occur
+
+#HTML# <hr>
+
+``Dance with you?  Yeah, when Dr. Ruth is elected president.''
+
+``But Dr. Ruth isn't an American citizen.''
+
+``Right!''
+
+#HTML# <hr>
+
+``When the function returns, it'll return a list of integers.''
+
+``But it can't possibly return a list of integers.''
+
+``Right!''
+
+#HTML# <hr>
+
+In fact, this function has a bug.  It runs forever on any nonempty list.
+
+  _Type Checking_ found an infinite loop bug!
+
+!!
+
+!!!!!!!!!!
+
+----------------------------------------------------------------
+
+Where's the Bug?
+****************
+
+Suppose we're trying to sort a one-element list [[ [x] ]].
+
+We split it with [[split]] into [[([x], [])]].
+
+Then we try to sort these two lists and merge the sorted lists back together.
+
+Sorting [[ [] ]] is OK.
+
+Sorting [[ [x] ]] puts us into an infinite loop.
+
+Solution:  Add a clause
+
+	fun sort [] = []
+#*        | sort [x] = [x]
+	  | sort x  = let val (p, q) = split x
+	               in merge (sort p, sort q)
+	              end;
+
+Type becomes
+
+	val sort = fn : int list -> int list
+
+We could make it a little better:
+
+	val sort = fn : ('a * 'a -> bool) -> 'a list -> 'a list
+
+----------------------------------------------------------------
+
+Type Checking in Perl
+*********************
+
+Perl is neat
+
+ML type checking is neat
+
+Any chance of combining them? 
+
+Not too likely
+
+Perl barely has _dynamic_ type checking
+
+----------------------------------------------------------------
+
+Type Checking in Perl:  Gaaaack
+*******************************
+
+	while (<>) {
+	  $total += $_;
+	}
+
+	@a = (1, 3.1416, "A painted lotus flower");
+
+	@a = localtime();
+	$s = localtime();
+
+	print ;
+
+	if (@a) { ... }
+	$s = @a;
+
+	$a[100000] = 'big!';
+	$h{nosuchkey} = 'It means "to chop"';
+
+Probably none of these would work right.
+
+================================================================
+
+Conclusion: 
+
+You can't make a hot fudge sundae with mashed potatoes instead of ice cream, either.
+
+----------------------------------------------------------------
+
+Run-Time Type Checking
+**********************
+
+[[use strict 'refs']]
+
+	$s = 'somestring';
+	$$s = 17;		# Sets $somestring to 17
+	use strict 'refs';
+	$$s = 17;		# Run-time error
+
+		Can't use string ("somestring") as a SCALAR ref 
+		while "strict refs" in use ...
+
+[[-w]]
+
+	$s = 'some string';
+	$r = $s + 13;           # Run-time warning
+
+		Argument "some string" isn't numeric in add ...
+
+----------------------------------------------------------------
+
+Compile-Time Type Checking
+**************************
+
+Uses the very new _pseudo-hash_ feature
+
+Idea:
+
+o People use hashes for objects
+
+o Attributes looked up by key
+
+o This is inefficient
+
+o Have an array for efficiency
+
+o Look up attributes by number instead of by name
+
+o Hard to remember the numbers!
+
+o Compromise: First element of array is a hash that maps keys to indices
+
+o Conversion of keys to indices can be done at compile time
+
+----------------------------------------------------------------
+
+
+Compile-Time Type Checking 
+**************************
+
+Data structure:
+
+	$octopus = 
+	  [ { tentacles => 1, hearts => 2, favorite_food => 3 },
+            8,
+            3,
+            "crab cakes",
+	  ];
+
+Usage:
+
+	$octopus->{tentacles};             # Yields 8
+
+	$octopus->{noses} = 1;             # Run-time error
+
+		No such array field at ...
+
+
+----------------------------------------------------------------
+
+Compile-Time Type Checking
+**************************
+
+[[Octopus.pm]]:
+
+	   package Octopus;
+           use fields qw(tentacles hearts favorite_food);
+           sub new { ... }
+
+[[main.pl]]:
+	   use Octopus;
+	   my $fenchurch = new Octopus;
+           my Octopus $junko = new Octopus;         # Note type declaration!
+
+           $fenchurch->{tentacles} = 8;  
+           $junko->{tentacles} = 8;  
+
+           # This will generate a [C[run-time]C] error:
+           $fenchurch->{noses} = 1;
+	   
+[[No such array field at ...]]
+
+           # This will generate a [C[compile-time]C] error:
+           $junko->{noses} = 1;
+
+[[No such field "noses" in variable $var of type Octopus at ...]]
+
+----------------------------------------------------------------
+
+Conclusion
+**********
+
+1. Type checking in C and Pascal sucks.
+
+2. Just because static type checking is a failure in C and Pascal  doesn't mean you have to give up on the idea. 
+
+3. Languages like ML have powerful compile-time type checking that is successful beyond the wildest imaginings of people who suffered from  Pascal.
+
+4. It is probably impossible to get static, ML-like type checking into  Perl without altering it beyond recognition.
+
+5. However, Perl does have some type checking mechanisms, and more     are coming up.
+
+----------------------------------------------------------------
+
+----------------------------------------------------------------END

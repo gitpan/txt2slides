@@ -1,0 +1,60 @@
+#!/usr/bin/perl
+#
+# Usage:
+#  htmltops -ps [files]    to turn HTML files into postscript
+#  htmltops -txt [files]    to turn HTML files into text
+# If [files] are omitted, it will do every .html file in the current directory
+# If -ps and -txt are omitted, it will default to -ps.
+# If an output file already exists and is newer than the corresponding
+# input file, it will not be regenerated
+
+use strict 'vars';
+
+use Cwd ();
+my $cwd = Cwd::cwd();
+# my $NETSCAPE = '/usr/local/bin/netscape';
+# my $NETSCAPE = '/usr/bin/netscape';
+my $NETSCAPE = '/usr/bin/netscape-navigator';
+
+my %type = ('txt' => 'text', 'ps' => 'PostScript');
+
+my $OUTPUT = 'ps';
+
+if ($ARGV[0] eq '--') {
+  shift;
+} elsif ($ARGV =~ /^-(\w+)/) {
+  $OUTPUT = $1;
+  shift;
+}
+
+my $type = $type{$OUTPUT};
+
+unless (@ARGV) {
+  @ARGV = glob('*.html');
+}
+
+for (@ARGV) {
+  my $html = $_;
+  $html = "$cwd/$_" unless $html =~ m{^/};
+
+  my $out = $html;
+  $out =~ s/\.html$//;
+  $out =~ s/$/.$OUTPUT/;
+
+  if (-f $html && (-M _ < -M $out || ! -e $out)) {
+    unlink $out;  # Ignore errors --- this is to prevent a Netscape confirmation dialog
+    netscape("openFile($html)");
+    netscape("saveAS($out, $type)");
+    print STDERR "$_\n";
+  }
+}
+
+
+exit;
+
+sub netscape {
+  unless (system($NETSCAPE, '-noraise', '-remote', @_) == 0) {
+    die "Couldn't run command @_; aborting ($?).\n";
+  }
+}
+

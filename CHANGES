@@ -1,0 +1,97 @@
+The following changes are courtesy of Mr. Autrijus Tang:
+
+  * There is a new -e option to make-slides; it specifies an encoding
+    layer that is installed on the input filehandles.  For example,
+    you may use 
+
+        make-slides -e euc-jp MyTalk.slides
+
+    says that the file 'MyTalk.slides' and the subsidiary *AMBLE
+    files, TOC_* files, and so on, are written in the euc-jp encoding.
+    All output HTML will be written in utf8, regardless of '-e'.
+
+  * Instead of a canned header, the contents of a TOC_HEAD file are
+    appended to the beginning of the table of contents.  Similarly,
+    the contents of TOC_TAIL are appended to the end.
+
+  * The sequence " // " is translated to a line break.  
+
+  * PREAMBLE, INAMBLE, and POSTABMLE files may now include the
+    sequences
+
+        $MJD_PREV_FILE
+        $MJD_LAST_FILE
+        $MJD_FIRST_FILE
+
+    which will expand to the names of the previous, the last, and the
+    first HTML slide files, respectively.  (These are analogous to the
+    $MJD_NEXT_FILE sequence which has been in the package for years.)
+
+ * The generated HTML contains <LINK REL...> tags to specify the
+   start, last, next, and previous files.  (See
+   http://www.w3.org/TR/REC-html40/types.html#type-links) 
+
+Moreover:  
+
+  * The PREAMBLE file has been reinstated.  If it exists, its contents
+    are inserted into the <HEAD> section of every slide.
+
+  * The handling of [Z[...]Z] ecapes has changed; it is now
+    configurable.  If you have a file called ESCAPE_CODES, it will be
+    read for escape code definitions.  The file should have the
+    following format:
+
+        R       #ff0000
+        G       #00ff00
+        B       #0000ff
+        E       sub { "&$_;" }
+        V       purple
+        C       sub { qq{<FONT COLOR="purple"><B><TT>$_</TT></B></FONT>} }
+
+    The left column is the letter used in the escape code.  For
+    example, the first line defines the meaning of the [R[...]R] code.
+    The rest of the line is the definition.  If the definition begins
+    with "sub ", it is taken to be a piece of Perl code which is
+    compiled into an anonymous subroutine.  The subroutine is invoked
+    with the escaped text as its argument and is expected to return
+    the expanded version of the escaped text.  As a convenience, the
+    escaped text will also be placed in $_ when the subroutine is
+    called.  If the definition does not begin with "sub ", then the
+    effect of the escape sequence is to set the escaped text in
+    typewriter-style font and the specified color.
+
+    Lines in the ESCAPE_CODES file whose leftmost nonblank character
+    is '#' are considered to be comments, and are ignored.
+
+    If there is no ESCAPE_CODES file, a default table is used.  The
+    default table is shown above.  
+
+    Autrijus Tang was also responsible for the addition of the
+    [E[...]E] escape, which generates an HTML entity.
+
+  * Preformatted lines that begin with '#*' were formerly set in
+    boldface purple text.  They are now set in whatever style is
+    dictated by the [C[...]C] escape code.  This defaults to boldface
+    purple.
+
+  * The distribution contains a new subdirectory, 'Sample-Ambles',
+    which contains examples of PREAMBLE, INAMBLE, POSTAMBLE, TOC_HEAD,
+    TOC_TAIL, and ESCAPE_CODES files.  In particular, Autrijus
+    contributed examples that demonstrate how to use Javascript to
+    autofocus control on the 'next' link, and how to use the HTML
+    'accesskey' attribute to set up key shortcuts for the 'next' and
+    'previous' links.  I would welcome contributions to be distributed
+    in this directory.
+
+  * The 'Strong Typing' example has moved into its own directory,
+    'Example-1'.  There's a new example, "Conference Presentation
+    Judo", in directory 'Example-2'.
+
+  * The Makefile is substantially improved.  Supplied in the main
+    directory is a generic Makefile that provides useful default
+    targets; slides sets can have individual Makefiles that inherit
+    the functions of the generic Makefile.  The examples show how to
+    do this.  The generic Makefile includes targets for building the
+    HTML and PS versions of the talk, 2-up and 4-up versions;
+    generating listings of warnings, and so on. 
+

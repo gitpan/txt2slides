@@ -1,0 +1,193 @@
+
+See the file 'Typing.slides' for an example slide file.
+
+Features upported by this slide making program:
+
+* Text will be converted to HTML in a more-or-less intelligent way.
+
+  * Lines that are underlined turn into headers in large type:
+
+        Largest Header
+        **************
+
+        Next-Largest Header
+        ===================
+
+        Smaller Header
+        ++++++++++++++
+
+        Even Smaller Header
+        -------------------
+
+    A header whose text is in all-caps is interpreted as being the
+    next-larger size.
+
+  * Formerly, mentions of URLs and email addresses would be hotlinked
+    to the appropriate places.  Since this feature sucked, I took it
+    out.  To reinstate it generally, edit the patterns in the file
+    txt2html-linkdict; alternatively, use the '#HTML#' directive on a
+    case-by-case basis to insert any HTML text you want into the
+    slides.
+        
+  * Lines beginning with 'o ' or '* ' turn into bullet items.
+    Nestedness will be inferred from the indentation of the bullets.
+    Lines beginning with numbers will be turned into enumerated lists.
+
+  * Paragraphs where every line is indented five or more spaces will
+    turn into fixed-width text, as if they were code.  
+
+    * If a line in an indented paragraph has '#*' flush with the left
+    margin, it is set in 'changed code style', which defaults to
+    purple boldface fixed-with type.  (See the slide 'Where's the Bug'
+    for an example.)
+
+  * " // " is translated to a line break.
+
+  * The first line of text on each slide is taken to be the slide's
+    title, unless the slide has a line that begins with #TITLE#, which
+    overrides this.  The title is used as the <TITLE> of the HTML page
+    for the slide and also appears in the TABLE_OF_CONTENTS.html
+    file.  If consecutive slides have the same title, only
+    the first one is listed in the table of contents.html.  b
+
+  * If a slide contains '#SECTION#' at the beginning of some line, then
+    its entry in the table of contents is printed in larger type, and
+    a horizontal rule separates it from the preceding section, if
+    any.  If a slide contains '#SECTION# sectionname' then
+    'sectionname' appears in the Table of contents instead of the
+    slide's title.
+
+  * The contents of the file TOC_HEAD file are appended to the
+    beginning of the table of contents.  The contents of TOC_TAIL are
+    appended to the end of the table of contents.
+
+* _foo_ puts 'foo' in italics.   *foo* puts 'foo' in boldface.
+  [[foo]] puts 'foo' in fixed-width font.
+
+  * [X[...]X], where X is any single character that matches /\w/
+    (including any letter, digit, or underscore) is a generic escape
+    sequence.  By default, the following escape sequences are defined:
+
+            [R[foo]R] puts foo in red fixed-width font.
+
+            Similarly [B[...]B] is blue, [G[...]G] is green, and
+            [V[...]V] is violet.  [P[...]P] is also blue, for no
+            particularly good reason.
+
+            [C[...]C] is 'change style', indicated that code has
+            changed; it defaults to boldface violet.  'C' stands for
+            'changed'.  (See #*, above.)
+
+            [E[name]E] inserts the HTML entity with the specified
+            name.
+
+    You may redefine these sequences by writing an ESCAPE_CODES file.
+    The file should have the following format:
+
+        R       #ff0000
+        G       #00ff00
+        B       #0000ff
+        P       #0000ff
+        E       sub { "&$_;" }
+        V       purple
+        C       sub { qq{<FONT COLOR="purple"><B><TT>$_</TT></B></FONT>} }
+
+    The left column is the letter used in the escape code.  For
+    example, the first line defines the meaning of the [R[...]R] code.
+    The rest of the line is the definition.  If the definition begins
+    with "sub ", it is taken to be a piece of Perl code which is
+    compiled into an anonymous subroutine.  The subroutine is invoked
+    with the escaped text as its argument and is expected to return
+    the expanded version of the escaped text.  As a convenience, the
+    escaped text will also be placed in $_ when the subroutine is
+    called.  If the definition does not begin with "sub ", then the
+    effect of the escape sequence is to set the escaped text in
+    typewriter-style font and the specified color.
+
+    Lines in the ESCAPE_CODES file whose leftmost nonblank character
+    is '#' are considered to be comments, and are ignored.
+
+    Any meaning you assign to escape code 'C' will also be used for
+    code lines that begin with '#*'; see '#*' above.
+
+  * Sometimes you want this behavior suppressed.  For example, if you
+    have a piece of code that uses a variable called
+    NUMBER_OF_NOSTRILS, the _OF_ will be taken as a request to put
+    'OF' in italics. To suppress this, try using NUMBER_??!OF_NOSTRILS
+    instead.  '??!' is replaced with nothing, and will disrupt the
+    processing of _ because there is no longer any word with _ on both
+    sides.  See section 3 of the '00README.1ST' file.
+
+* A line of '-----'s divides each slide from the next.  If the line of
+  ----'s ends with a string of letters, say 'TOM', then the slide will
+  be skipped unless you are running make-slides with the "-F TOM" option.
+
+* A line of '====='s makes a 'continued' slide:  The second slide will
+  have all the material on the first slide, plus some extra.   The
+  first slide will have 'continued...' in very small letters at the
+  bottom.  If slide 8 is broken into 4 parts, the 4 parts will be
+  named slide008a, slide008b, slide008c, and slide008.
+
+* The contents of the INAMBLE file is inserted at the top of each
+  slide.  The contents of the POSTAMBLE file is inserted at the
+  bottom.  The contents of PREAMBLE are inserted into the <HEAD>
+  section of the slide.  In these files, the following character
+  sequences are replaced:
+
+        $MJD_NEXT_FILE          (the filename of the next slide)
+        $MJD_PREV_FILE          (the filename of the previous slide)
+        $MJD_FIRST_FILE         (the filename of the first slide)
+        $MJD_LAST_FILE          (the filename of the last slide)
+
+* A line that begins with "#IMG# filename" will inline that file,
+  centered, on the current slide.  If the filename has no extension,
+  '.gif' will be assumed.  A line that begins with "#RTIMG# filename"
+  will inline the image at the right margin, and will flow text around
+  the image.
+
+* A line that begins with #HTML# ... is inserted directly into the
+  HTML output.  You can use this as a general escape hatch to get any
+  effect you want.  For example, you can use it to insert an image on
+  the right-hand side of a slide that the text will flow around:
+
+          #HTML# <img align=right src="foo.jpg">
+
+          More stuff here...
+
+          #HTML# <br clear=right>
+
+          This text starts below foo.jpg
+
+  Or a quotation in large green letters: 
+
+          #HTML# <p align=center><font size="+2" color=green>For best results,
+          #HTML# avoid doing stupid things.<br>--Cliff Stoll</font></p>
+
+* The -M option to make-slides enables the macro-expansion factility.
+  "#MACRO# name expansion text..." defines a new macro.
+  Thenceforward, any appearance of "%name%" will be replaced with
+  "expansion text" in the HTML.  I used this in my lambda calculus
+  talk to have it replace "%L6%" with "<img src="small-lambda.gif">"
+  everywhere.   Without the -M option, #MACRO# lines are discarded and
+  %..% sequences are passed through verbatim. 
+
+* The file .width-errors will be populated with information about
+  parts of the slides that are likely to run off the right-hand margin
+  when the slides are printed.  The program assumes U.S. letter-size
+  paper.  For A4 paper, use the -4 option when running 'make-slides'.
+  For other sizes, hack the source code.
+
+* If you run 'make-slides' with the '-e ENCODING' option,
+  'make-slides' will interpret the input files as being encoded with
+  the specified character encoding.
+
+* The program 'htmltops', included, will drive Netscape to convert
+  HTML files to PostScript.  The program 'mypsmerge' will merge the
+  many separate PS files into a single file.  The programs 'mypsup2'
+  and 'mypsup4' will reformat this single file for printing in 2-up or
+  4-up format:
+
+        mypsmerge slide???.ps > slides-1up.ps
+        mypsup2 slides-1up.ps > slides-2up.ps
+        mypsup4 slides-1up.ps > slides-4up.ps
+

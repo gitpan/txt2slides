@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+use Getopt::Std;
+getopts('Ps');
+
+my @ARGVSAVE = @ARGV;
+my $pagecount = 0;
+unless ($opt_P) {
+  while (<>) {
+    $pagecount += $1 if /^%%Pages: (\d+)/;
+  }
+}
+print STDERR "Total of $pagecount pages\n";
+
+@ARGV = @ARGVSAVE;
+my $header = 1;
+my $page = 1;
+while (<>) {
+  next if /^%%EOF/;
+  $header = 0 unless /^%[%!]/;
+  if (/^%%Pages:/) {
+    next if $opt_P || ! $header;
+    print "%%Pages: $pagecount\n";
+    next;
+  }
+  if (/%%Page: /) {
+    next if $opt_P;
+    print "%%Page: $page $page\n";
+    print STDERR "[$page] ";
+    $page++;
+    next;
+  }
+  print;
+  if (eof && $opt_s) {
+    print "false 0 startjob pop\n";
+  }
+}
+print "%%EOF\n";
+print STDERR "\n";

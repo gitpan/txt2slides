@@ -1,0 +1,60 @@
+#!/usr/local/bin/perl
+$flag = 0;                      # We have not yet found a page
+$mod = 1;                       # First page mod 4 is 1
+$page = 1;                      # Start at page #1
+$pages = 1;                     # Allow %%Pages comment
+
+
+my $S = 0.48;                   # scale factor
+my ($Lm, $Bm) = (54, 72);       # margins
+my ($T, $B, $L, $R) = (396-$Bm*$S, $Bm-$Bm*$S,
+                       $Lm-$Lm*$S, 306-$Lm*$S);
+
+while (<>) {
+    if (/^%%Pages:/ && $pages) {
+        print "%%Pages: (atend)\n";
+        $pages = 0;
+    } elsif (/^%%Page:/) {      # We have found a page
+        if ($flag) {
+            print "restore\n";  # restore if it isn't the first
+        }
+        $flag = 1;
+        if ($mod == 1) {            # Translate for first of four pages
+          printf("%%%%Page: %d %d\n", $page, $page);
+          print "save /showpage {} def\n";
+          print "$L $T translate\n";
+        } elsif ($mod == 2) {
+          print "save /showpage {} def\n";
+          print "$R $T translate\n";
+        } elsif ($mod == 3) {
+          print "save /showpage {} def\n";
+          print "$L $B translate\n";
+        } elsif ($mod == 4) {
+          print "save\n";     # gsave
+          print "$R $B translate\n";
+        } else { die "mod=$mod" }
+        print "$S $S scale\n";
+        $mod++;
+        if ($mod == 5) {
+#          print "restore\n";
+#          $flag = 0;
+          $page++;
+          $mod = 1;
+        }
+    } elsif (/^%%Trail/) {      # Cleanup if a %%Trailer is found
+        if ($flag) {
+            print "restore\n";
+        }
+        print $_;
+        printf("%%%%Pages: %d\n", $page);
+        $flag = 0;
+    } elsif (/^%%EOF/) {        # Cleanup if an %%EOF is found
+        if ($flag) {
+            print "restore\nshowpage\n";
+        }
+        print $_;
+        $flag = 0;
+    } else {
+        print;
+    }
+}

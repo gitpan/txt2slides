@@ -1,0 +1,19 @@
+</div></td></tr></table>
+
+<p>
+<table width=100% bgcolor="#202040">
+
+<tr><td width="33%" align="left"><img width=32 height=32 src="favicon.png"></td>
+<td width="33%" align="center">
+<a accesskey='p' href="$MJD_PREV_FILE">&lt;&lt; <u>P</u>revious</a>
+<font color="#c9c9ff">|</font>
+<font color="#c9c9ff"><a accesskey='i' href="TABLE_OF_CONTENTS.html"><u>I</u>ndex</a>
+<font color="#c9c9ff">|</font>
+<a accesskey='n' id="selector" name="selector" href="$MJD_NEXT_FILE"><u>N</u>ext &gt;&gt;</a></td>
+    <td width="33%" align=right bgcolor="#202040"><font color="#c9c9ff">Copyright &copy; 2002 <a accesskey='a' href="http://www.autrijus.org/"><u>A</u>utrijus Tang</a></td>
+</tr>
+</table>
+
+<script><!--
+document.getElementById("selector").focus();
+--></script>
